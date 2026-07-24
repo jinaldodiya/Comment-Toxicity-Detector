@@ -1,80 +1,143 @@
 import streamlit as st
-import pickle
+import pandas as pd
+import matplotlib.pyplot as plt
+from detoxify import Detoxify
 
-st.set_page_config(page_title="Toxicity Detector", page_icon="✨", layout="centered")
+st.set_page_config(
+    page_title="Comment Toxicity Detector",
+    page_icon="🛡️",
+    layout="centered"
+)
 
-st.markdown("""
-    <style>
-    .stApp {
-        background: linear-gradient(135deg, #fdfcfb, #e2d1c3);
-    }
-    .title {
-        text-align: center;
-        color: #5b4636;
-        font-size: 40px;
-        font-weight: 700;
-    }
-    label {
-        color: #6b5e4a !important;
-        font-size: 16px !important;
-    }
-    textarea {
-        background-color: #ffffff !important;
-        color: #3f3f3f !important;
-        border-radius: 10px !important;
-    }
-    .stTextArea textarea {
-        color: #3f3f3f !important;
-    }
-    .stButton>button {
-        background: linear-gradient(90deg, #d6ccc2, #edede9);
-        color: #5b4636;
-        border-radius: 10px;
-        height: 50px;
-        width: 100%;
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .result-box {
-        margin-top: 25px;
-        padding: 20px;
-        border-radius: 12px;
-        text-align: center;
-        font-size: 22px;
-        font-weight: 600;
-        animation: fadeIn 0.8s ease-in-out;
-    }
-    .toxic {
-        background-color: #fee2e2;
-        color: #991b1b;
-    }
-    .nontoxic {
-        background-color: #dcfce7;
-        color: #166534;
-    }
-    @keyframes fadeIn {
-        from {opacity: 0; transform: translateY(10px);}
-        to {opacity: 1; transform: translateY(0);}
-    }
-    </style>
-""", unsafe_allow_html=True)
+@st.cache_resource
+def load_model():
+    return Detoxify("original")
 
-model = pickle.load(open("model.pkl", "rb"))
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+model = load_model()
 
-st.markdown("<div class='title'>✨ Comment Toxicity Detector</div>", unsafe_allow_html=True)
+st.sidebar.title("About")
 
-text = st.text_area("💬 Enter your comment here")
+st.sidebar.info("""
+Comment Toxicity Detector
 
-if st.button("🔍 Check "):
-    with st.spinner("⏳ Analyzing comment..."):
-        vec = vectorizer.transform([text])
-        result = model.predict(vec)
-        prob = model.predict_proba(vec)
+Technology Used
 
-    confidence = round(max(prob[0]) * 100, 2)
+• Python
+• Streamlit
+• Detoxify
+• Deep Learning
+""")
 
-    if result[0] == 1:
-        st.markdown(f"<div class='result-box toxic'>❌ Toxic Comment<br>Confidence: {confidence}%</div>", unsafe_allow_html=True)
+st.title("🛡️ Comment Toxicity Detector")
+
+st.write("Analyze online comments and detect toxic language in real time.")
+
+comment = st.text_area(
+    "Enter Your Comment",
+    placeholder="Type your comment here...",
+    height=180
+)
+
+if comment.strip():
+
+    with st.spinner("Analyzing..."):
+        results = model.predict(comment)
+
+    highest = max(results.values())
+
+    st.subheader("Prediction")
+
+    if highest > 0.5:
+        st.error(f"🚨 Toxic Comment\n\nConfidence : {highest*100:.2f}%")
     else:
-        st.markdown(f"<div class='result-box nontoxic'>✅ Not Toxic Comment<br>Confidence: {confidence}%</div>", unsafe_allow_html=True)
+        st.success(f"✅ Not Toxic Comment\n\nConfidence : {(1-highest)*100:.2f}%")
+
+    st.subheader("Toxicity Breakdown")
+
+    df = pd.DataFrame({
+        "Category": list(results.keys()),
+        "Confidence (%)": [round(x * 100, 2) for x in results.values()]
+    })
+
+    st.dataframe(df, use_container_width=True)
+
+    st.subheader("📈 Confidence by Category")
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.bar(df["Category"], df["Confidence (%)"])
+    ax.set_ylabel("Confidence (%)")
+    ax.set_xlabel("Category")
+    plt.xticks(rotation=45)
+
+    st.pyplot(fig)
+
+uploaded_file = st.file_uploader(
+    "📂 Upload CSV File",
+    type=["csv"]
+)
+
+if uploaded_file is not None:
+
+    csv = pd.read_csv(uploaded_file).head(20)
+
+    st.subheader("Uploaded CSV")
+    st.dataframe(csv, use_container_width=True)
+
+    if "comment_text" in csv.columns:
+        text_column = "comment_text"
+    elif "comment" in csv.columns:
+        text_column = "comment"
+    else:
+        st.error("CSV must contain 'comment_text' or 'comment' column.")
+        st.stop()
+
+    predictions = []
+    confidence = []
+
+    with st.spinner("Analyzing CSV..."):
+
+        for text in csv[text_column]:
+
+            result = model.predict(str(text))
+
+            highest = max(result.values())
+
+            if highest > 0.5:
+                predictions.append("Toxic")
+            else:
+                predictions.append("Not Toxic")
+
+            confidence.append(round(highest * 100, 2))
+
+    csv["Prediction"] = predictions
+    csv["Confidence (%)"] = confidence
+
+    st.subheader("Prediction Results")
+
+    st.dataframe(csv, use_container_width=True)
+
+    st.subheader("📊 Toxic vs Not Toxic")
+
+    counts = csv["Prediction"].value_counts()
+
+    fig2, ax2 = plt.subplots(figsize=(5, 5))
+    ax2.pie(
+        counts,
+        labels=counts.index,
+        autopct="%1.1f%%",
+        startangle=90
+    )
+
+    ax2.axis("equal")
+
+    st.pyplot(fig2)
+
+    st.download_button(
+        label="📥 Download Prediction Results",
+        data=csv.to_csv(index=False).encode("utf-8"),
+        file_name="prediction_results.csv",
+        mime="text/csv"
+    )
+
+st.markdown("---")
+st.caption("Developed using Streamlit • Detoxify • Deep Learning")
