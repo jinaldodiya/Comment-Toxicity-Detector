@@ -52,35 +52,6 @@ Comment-Toxicity-Detector/
 └── README.md
 ```
 
----
-
-## ⚙️ Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/jinaldodiya/Comment-Toxicity-Detector.git
-```
-
-Move into the project folder:
-
-```bash
-cd Comment-Toxicity-Detector
-```
-
-Install dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
-Run the application:
-
-```bash
-streamlit run app.py
-```
-
----
 
 ## 📊 Output
 
@@ -109,9 +80,3 @@ The application provides:
 ## 👩‍💻 Developer
 
 **Jinal Dodiya**
-
----
-
-## 📄 License
-
-This project is created for educational and learning purposes.
