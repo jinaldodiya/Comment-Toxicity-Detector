@@ -1,82 +1,46 @@
-# 🛡️ Comment Toxicity Detector
 
-A Deep Learning based web application that detects whether a comment is **Toxic** or **Not Toxic** using the **Detoxify** pre-trained model. The application also provides confidence scores for different toxicity categories and supports CSV file analysis.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap Bordered Table</title>
 
----
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
 
-## 📌 Project Overview
+    <div class="container mt-5">
 
-Online platforms receive thousands of comments every day. Some comments contain abusive or offensive language that can negatively impact users.
+        <h2 class="text-center mb-4">Student Information</h2>
 
-This project automatically analyzes text comments and classifies them as **Toxic** or **Not Toxic** using Artificial Intelligence and Deep Learning.
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Middle Name</th>
+                    <th>Last Name</th>
+                </tr>
+            </thead>
 
----
+            <tbody>
+                <tr>
+                    <td>john</td>
+                    <td>Doe</td>
+                    <td>john@guvi.in</td>
+                </tr>
+            </tbody>
+        </table>
 
-## 🚀 Features
+        <div class="mt-4">
+            <h3>My Learning Progress</h3>
+            <p>I am learning HTML, CSS, Bootstrap and Python.</p>
+            <p>Continuously improving my web development skills.</p>
+        </div>
 
-- ✅ Real-time Comment Toxicity Detection
-- ✅ Automatic Prediction while typing
-- ✅ Confidence Score Display
-- ✅ Toxicity Breakdown Table
-- ✅ CSV File Upload
-- ✅ Batch Prediction for Multiple Comments
-- ✅ Download Prediction Results as CSV
-- ✅ Pie Chart Visualization
-- ✅ Bar Chart Visualization
-- ✅ Clean and User-Friendly Streamlit Interface
+    </div>
 
----
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-## 🛠️ Technologies Used
-
-- Python
-- Streamlit
-- Detoxify
-- PyTorch
-- Pandas
-- Matplotlib
-
----
-
-## 📂 Project Structure
-
-```
-Comment-Toxicity-Detector/
-│
-├── app.py
-├── main.py
-├── model.pkl
-├── vectorizer.pkl
-├── train.csv
-├── test.csv
-└── README.md
-```
-
-
-## 📊 Output
-
-The application provides:
-
-- Toxic / Not Toxic Prediction
-- Confidence Percentage
-- Toxicity Breakdown
-- CSV Batch Analysis
-- Pie Chart
-- Bar Chart
-- Download Prediction Results
-
----
-
-## 🎯 Future Enhancements
-
-- User Login System
-- Multiple Language Support
-- API Integration
-- Dashboard Analytics
-- Cloud Deployment
-
----
-
-## 👩‍💻 Developer
-
-**Jinal Dodiya**
+</body>
+</html>
